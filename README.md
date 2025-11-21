@@ -233,47 +233,38 @@ This generates `results/rd_curve_references.png` with separate plots for PSNR an
 
 ## Rate-Distortion Results
 
-Below is an example of the generated rate-distortion curves comparing all methods:
+Below is an example of the generated rate–distortion curves comparing all reference methods:
 
 <p align="center">
   <img src="rd_curve_references.png" alt="Rate-Distortion Curves" width="600"/>
 </p>
 
-The rate-distortion curves (`rd_curve_references.png`) compare all methods using:
+The rate–distortion curves (`rd_curve_references.png`) compare all methods using:
 
 - **X-axis**: Bits per complex coil pixel (bpp)
-- **Y-axis (left)**: PSNR (dB) computed on magnitude images
-- **Y-axis (right)**: SSIM computed on magnitude images
+- **Y-axis (left)**: PSNR (dB) on ESPIRiT-reconstructed complex images
+- **Y-axis (right)**: SSIM on ESPIRiT-reconstructed complex images
 
 ### Key Observations
 
-1. **Uniform PCA (Red)**: 
-   - Best performance at medium to high bit rates (>1.0 bpp)
-   - Achieves highest PSNR (~56 dB) and SSIM (~0.998) at ~2.0 bpp
-   - Exploits coil correlations effectively
+1. **Uniform PCA coil compression**  
+   - Consistently outperforms all three non-PCA baselines across the entire bit-rate range.  
+   - For a given bit rate, it achieves the highest SSIM (and PSNR), confirming that explicitly modeling coil correlations with a global PCA basis is highly effective for multi-coil compression.
 
-2. **DCT Water-Filling (Orange)**:
-   - Good performance across bit rate range
-   - Better than JPEG at all bit rates
-   - Frequency-domain compression preserves important components
+2. **DCT water-filling**  
+   - Strongest among the non-PCA baselines at medium and high bit rates.  
+   - Outperforms JPEG in this regime by selecting the largest DCT coefficients globally across coils.
 
-3. **VD Poisson FFT (Green)**:
-   - Excellent at low to medium bit rates (<1.0 bpp)
-   - Natural for MRI (k-space domain)
-   - Variable-density sampling preserves center k-space
+3. **VD Poisson FFT**  
+   - Broadly comparable to DCT water-filling across low–to–medium bit rates.  
+   - Operates directly in k-space and pairs naturally with ESPIRiT reconstruction, but is still dominated by uniform PCA in the current evaluation.
 
-4. **JPEG (Blue)**:
-   - Baseline method, lowest performance
-   - Simple but less efficient
-   - Quality degrades significantly at low bit rates
+4. **JPEG on real/imag mosaics**  
+   - Serves as a simple baseline and sanity check.  
+   - Weaker than DCT at moderate and high bit rates, but becomes competitive and often the strongest among the non-PCA methods at very low bit rates.
 
-### Trade-offs
+Overall, these results validate the evaluation pipeline and show that **coil-aware compression (uniform PCA)** is a strong and effective baseline, motivating the development of a more flexible, k-space–aware dynamic coil compression scheme.
 
-- **Low bit rates (<0.5 bpp)**: VD Poisson FFT performs best
-- **Medium bit rates (0.5-1.5 bpp)**: DCT and VD Poisson competitive
-- **High bit rates (>1.5 bpp)**: Uniform PCA dominates
-
-All metrics (PSNR and SSIM) are computed on **magnitude images** to reflect perceptual quality in MRI visualization.
 
 ## File Structure
 
@@ -304,14 +295,58 @@ EE274_dynamic_coil_compression/
 
 ## Notes
 
-- All compression methods use magnitude-based PSNR and SSIM for evaluation
-- BPP (bits per pixel) is calculated as total bits / (N_coils × H × W)
-- ESPIRiT is used for final image reconstruction in all methods
-- Results are saved as PyTorch tensors for easy loading and analysis
+- All compression methods are evaluated using PSNR and SSIM computed on **ESPIRiT-reconstructed complex images**.
+- BPP (bits per pixel) is calculated as total bits / (N_coils × H × W).
+- ESPIRiT is used for final image reconstruction in all methods.
+- Results are saved as PyTorch tensors for easy loading and analysis.
 
 ## References
 
-- ESPIRiT: Uecker et al., "ESPIRiT—an eigenvalue approach to autocalibrating parallel MRI: where SENSE meets GRAPPA", MRM 2014
-- Variable-density Poisson sampling: Lustig et al., "Sparse MRI: The application of compressed sensing for rapid MR imaging", MRM 2007
-- JPEG: Wallace, G. K., "The JPEG still picture compression standard," Communications of the ACM, 1991
+### ESPIRiT (Parallel MRI / Sensitivity Maps)
+
+M. Uecker, P. Lai, M. J. Murphy, P. Virtue, M. Elad, J. M. Pauly, S. S. Vasanawala, and M. Lustig,
+
+"ESPIRiT—an eigenvalue approach to autocalibrating parallel MRI: where SENSE meets GRAPPA,"
+
+*Magnetic Resonance in Medicine*, vol. 71, no. 3, pp. 990–1001, 2014.
+
+### Array / Coil Compression (PCA)
+
+M. Buehrer, K. P. Pruessmann, P. Boesiger, and S. Kozerke,
+
+"Array compression for MRI with large coil arrays,"
+
+*Magnetic Resonance in Medicine*, vol. 57, no. 6, pp. 1131–1139, 2007.
+
+### Compressed Sensing MRI (Sparse MRI)
+
+M. Lustig, D. Donoho, and J. M. Pauly,
+
+"Sparse MRI: The application of compressed sensing for rapid MR imaging,"
+
+*Magnetic Resonance in Medicine*, vol. 58, no. 6, pp. 1182–1195, 2007.
+
+### Compressed Sensing MRI (Overview / Tutorial)
+
+M. Lustig, D. Donoho, and J. M. Pauly,
+
+"Compressed sensing MRI,"
+
+*IEEE Signal Processing Magazine*, vol. 25, no. 2, pp. 72–82, 2008.
+
+### Variable-Density Poisson-Disc Sampling
+
+R. Bridson,
+
+"Fast Poisson-disk sampling in arbitrary dimensions,"
+
+*ACM SIGGRAPH 2007 Sketches & Applications*, Article No. 22, 2007.
+
+### JPEG Still Image Compression
+
+G. K. Wallace,
+
+"The JPEG still picture compression standard,"
+
+*Communications of the ACM*, vol. 34, no. 4, pp. 30–44, 1991.
 
