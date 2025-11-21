@@ -5,7 +5,12 @@ import os
 import sys
 import matplotlib.pyplot as plt
 
-sys.path.append(os.getcwd())
+# Add project_JH to path (go up 3 levels from scripts/ to project_JH/)
+script_dir = os.path.dirname(os.path.abspath(__file__))
+project_jh_dir = os.path.dirname(os.path.dirname(os.path.dirname(script_dir)))
+if project_jh_dir not in sys.path:
+    sys.path.insert(0, project_jh_dir)
+
 from project_JH.utils.mri_utils import load_imgs, run_espirit_pipeline, DATA_DIR, quantize_and_encode
 
 def fft_compress_decompress(imgs, keep_percent, quant_bits=8):

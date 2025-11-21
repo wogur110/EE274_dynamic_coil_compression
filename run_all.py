@@ -4,17 +4,8 @@ import subprocess
 
 def run_script(script_name):
     print(f"\nRunning {script_name}...")
-    # Set up environment with correct PYTHONPATH
-    env = os.environ.copy()
-    # Add parent directory to PYTHONPATH to allow 'import project_JH'
-    parent_dir = os.path.dirname(os.getcwd())
-    if "PYTHONPATH" in env:
-        env["PYTHONPATH"] = parent_dir + os.pathsep + env["PYTHONPATH"]
-    else:
-        env["PYTHONPATH"] = parent_dir
-        
     try:
-        subprocess.run([sys.executable, script_name], check=True, env=env)
+        subprocess.run([sys.executable, script_name], check=True)
     except subprocess.CalledProcessError as e:
         print(f"Error running {script_name}: {e}")
     except Exception as e:

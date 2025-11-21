@@ -8,7 +8,10 @@ import zlib
 from typing import Tuple, Optional
 
 # Constants
-DATA_DIR = "/mnt/d/ucb_stack_spiral"
+# Get project root directory (parent of utils/)
+_utils_dir = os.path.dirname(os.path.abspath(__file__))
+_project_root = os.path.dirname(_utils_dir)
+DATA_DIR = os.path.join(_project_root, "dataset")
 IMGS_FILE = os.path.join(DATA_DIR, "imgs.pt")
 DEVICE = torch.device("cuda:0" if torch.cuda.is_available() else "cpu")
 
