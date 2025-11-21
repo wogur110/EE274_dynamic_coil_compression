@@ -236,7 +236,7 @@ This generates `results/rd_curve_references.png` with separate plots for PSNR an
 Below is an example of the generated rate-distortion curves comparing all methods:
 
 <p align="center">
-  <img src="results/rd_curve_references.png" alt="Rate-Distortion Curves" width="600"/>
+  <img src="rd_curve_references.png" alt="Rate-Distortion Curves" width="600"/>
 </p>
 
 The rate-distortion curves (`rd_curve_references.png`) compare all methods using:
